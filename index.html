@@ -107,10 +107,49 @@
   .filter-row.disabled { color: #b5bbc2; cursor: default; }
   .filter-search { width: 100%; border: 1px solid var(--bd); border-radius: 4px;
     padding: 6px 9px; font: inherit; margin: 4px 0 14px; }
+
+  .cd td.pname { cursor: pointer; }
+  .cd td.pname:hover { text-decoration: underline; }
+  .cd-hint { color: var(--muted); font-size: 11px; padding: 2px 10px 8px; }
+
+  /* preset editor overlay (Fusion-style) */
+  #pe-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    display: none; align-items: center; justify-content: center; z-index: 30; }
+  .pe-card { background: var(--panel); border: 1px solid var(--bd); border-radius: 8px;
+    width: min(520px, 94vw); min-width: 420px; max-width: 96vw; max-height: 90vh; overflow: auto;
+    resize: both; box-shadow: 0 12px 48px rgba(0,0,0,0.3); }
+  .pe-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid var(--bd2); position: sticky; top: 0; background: var(--panel); }
+  .pe-title { font-weight: 600; color: #1a5fb4; }
+  .pe-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .pe-close { background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer; line-height: 1; }
+  .pe-body { padding: 12px 16px; }
+  .pe-group { border: 1px solid var(--bd2); border-radius: 6px; padding: 8px 12px 10px; margin-bottom: 12px; }
+  .pe-group h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #57606a; }
+  .pe-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+  .pe-row label { flex: 0 0 180px; color: #4a525a; }
+  .pe-row .pe-control { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+  .pe-row .pe-control.driven { cursor: pointer; }
+  .pe-row .pe-vwrap { flex: 1; min-width: 0; }
+  .pe-row .val { width: 100%; border: 1px solid var(--bd); border-radius: 4px; padding: 4px 8px;
+    background: #f7f8f9; color: #2b2f33; font-variant-numeric: tabular-nums;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pe-control.driven .val { color: #0f7b8f; }                 /* driven end-results in teal */
+  .pe-control .val.is-expr { font-family: ui-monospace, Menlo, monospace; color: #1a7f37;
+    background: #eef7ef; border-color: #9ec9a3;
+    white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; }
+  .fx { font: italic 13px "Times New Roman", Georgia, serif; color: #9aa3ad;
+    width: 14px; text-align: center; flex: 0 0 auto; }
+  .pe-control.driven:hover .fx { color: #0f7b8f; }
+  .pe-hint { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .pe-row input.chk { width: 15px; height: 15px; accent-color: var(--brand); }
+  .pe-note { font-size: 11px; color: #8a6a1f; background: #fdf2da; border: 1px solid #f0d79a;
+    border-radius: 5px; padding: 6px 9px; margin-top: 4px; }
 </style>
-  <script type="module" crossorigin src="./assets/index-B8HdBKx0.js"></script>
+  <script type="module" crossorigin src="./assets/index-CJhrR83a.js"></script>
 </head>
 <body>
   <div id="app" class="app"></div>
+  <div id="pe-overlay"></div>
 </body>
 </html>
