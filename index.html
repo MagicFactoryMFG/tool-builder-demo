@@ -3,153 +3,199 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tool Builder — Library</title>
+<title>Tool Builder — Category Scraper</title>
 <style>
-  :root {
-    --brand: #f5a623; --brand-dim: #c9821b;
-    --sel: #cfe4f7; --sel-bd: #5b9bd5;
-    --bg: #f4f5f7; --panel: #ffffff; --bd: #d4d8dd; --bd2: #e4e7ea;
-    --ink: #2b2f33; --muted: #6b7280; --head: #eceef1;
-  }
+  :root { --brand: #f5a623; --brand-dim: #c9821b; --ink: #2b2f33; --muted: #6b7280;
+    --bd: #d6dae0; --bd2: #e7eaee; --panel: #ffffff; --bg: #eef0f3; --sel: #cfe4f7; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
+  html, body { margin: 0; min-height: 100%; }
   body { background: var(--bg); color: var(--ink);
-    font: 12.5px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  .app { display: grid; grid-template-columns: 1fr 372px; grid-template-rows: auto 1fr;
-    height: 100vh; }
-  .titlebar { grid-column: 1/3; background: var(--head); border-bottom: 1px solid var(--bd);
-    padding: 7px 14px; font-weight: 600; font-size: 13px; color: #3a3f44;
-    display: flex; align-items: center; gap: 10px; }
-  .titlebar .brandchip { margin-left: auto; font-weight: 600; font-size: 11px; color: #8a6a1f;
-    background: #fdf2da; border: 1px solid #f0d79a; border-radius: 20px; padding: 2px 10px; }
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1180px; margin: 22px auto; padding: 0 18px; display: grid;
+    grid-template-columns: 1fr 240px; gap: 18px; align-items: start; }
+  .card { background: var(--panel); border: 1px solid var(--bd); border-radius: 12px; }
+  .main { padding: 22px 26px; }
+  .titlebar { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .glyph { width: 46px; height: 46px; border: 2px solid var(--ink); border-radius: 10px;
+    display: grid; place-items: center; font-size: 22px; font-weight: 700; }
+  h1 { font-size: 24px; margin: 0; }
+  .sub { color: var(--muted); margin: 2px 0 0; }
+  .brandchip { margin-left: auto; font-size: 11px; color: #8a6a1f; background: #fdf2da;
+    border: 1px solid #f0d79a; border-radius: 20px; padding: 3px 11px; }
 
-  .leftpane { grid-row: 2; display: flex; flex-direction: column; min-height: 0;
-    border-right: 1px solid var(--bd); background: var(--panel); }
-  .toolbar { display: flex; align-items: center; gap: 4px; padding: 6px 8px;
-    border-bottom: 1px solid var(--bd2); background: var(--panel); }
-  .toolbar .ico { width: 24px; height: 22px; border: 1px solid transparent; border-radius: 4px;
-    display: grid; place-items: center; color: #57606a; font-size: 13px; }
-  .toolbar .ico.dis { color: #c3c8ce; }
-  .toolbar .spacer { flex: 1; }
-  .toolbar .clear { font-size: 11.5px; color: #57606a; border: 1px solid var(--bd);
-    border-radius: 4px; padding: 3px 9px; background: #fafbfc; cursor: pointer; }
+  .sec-h { font-weight: 600; margin: 26px 0 8px; }
+  .hint { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
 
-  .list-wrap { flex: 1 1 58%; overflow: auto; min-height: 0; }
-  table.tl { width: 100%; border-collapse: collapse; }
-  .tl thead th { position: sticky; top: 0; background: var(--head); text-align: left;
-    font-weight: 600; color: #4a525a; padding: 6px 10px;
-    border-bottom: 1px solid var(--bd); font-size: 11.5px; z-index: 1; }
-  .tl thead th.gear { width: 30px; text-align: center; color: #8a929b; }
-  .tl .grouprow td { background: #f0f2f4; font-weight: 600; color: #3a3f44;
-    padding: 6px 10px; border-bottom: 1px solid var(--bd2); font-size: 11.5px; }
-  .tl tbody tr.tool { cursor: pointer; }
-  .tl tbody tr.tool td { padding: 4px 10px; border-bottom: 1px solid #f0f1f3;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tl tbody tr.tool:hover td { background: #eef5fb; }
-  .tl tbody tr.tool.sel td { background: var(--sel); }
-  .tl tbody tr.tool.sel td:first-child { box-shadow: inset 3px 0 0 var(--sel-bd); }
-  .tl td.icon { width: 30px; text-align: center; padding: 2px; }
-  .tl td.icon svg { height: 26px; width: 20px; vertical-align: middle; }
-  .tl td.cr { width: 92px; color: #4a525a; font-variant-numeric: tabular-nums; }
-  .tl .col-name { min-width: 0; }
+  /* API key */
+  .keybar { display: flex; gap: 10px; align-items: center; background: #fbfcfd;
+    border: 1px solid var(--bd2); border-radius: 8px; padding: 10px 12px; }
+  .keybar label { font-size: 12.5px; color: #4a525a; white-space: nowrap; }
+  .keybar input { flex: 1; border: 1px solid var(--bd); border-radius: 6px; padding: 7px 10px; font: inherit; }
+  .keybar .ok { color: #1f7a3d; font-size: 12px; }
+  .btn.small { padding: 8px 14px; font-size: 12.5px; }
+  .keysaved { display: flex; align-items: center; gap: 10px; background: #f0f9f2;
+    border: 1px solid #bfe3cb; border-radius: 8px; padding: 10px 12px; }
+  .keysaved .badge { color: #1f7a3d; font-weight: 600; font-size: 13px; }
+  .keysaved .mask { color: #6b7280; font: 12.5px ui-monospace, Menlo, monospace; }
+  .linkbtn { margin-left: auto; background: none; border: none; color: #1a5fb4; cursor: pointer;
+    font: inherit; font-size: 12.5px; }
+  .linkbtn:hover { text-decoration: underline; }
+  .keynext { margin: 10px 2px 0; font-size: 12.5px; color: #6a5012; background: #fdf2da;
+    border: 1px solid #f0d79a; border-radius: 8px; padding: 9px 12px; width: fit-content; }
+  .keyhelp { margin: 8px 2px 0; font-size: 12.5px; }
+  .keyhelp summary { color: var(--brand-dim); cursor: pointer; width: fit-content; font-weight: 500; }
+  .keyhelp summary:hover { text-decoration: underline; }
+  .keyhelp ol { margin: 10px 0 6px; padding-left: 20px; color: #4a525a; }
+  .keyhelp li { margin: 4px 0; }
+  .keyhelp a { color: #1a5fb4; }
+  .keyhelp code { background: #eef0f3; border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+  .keyhelp .kh-note { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
 
-  .cutting { flex: 0 0 42%; border-top: 1px solid var(--bd); display: flex; flex-direction: column;
-    min-height: 0; background: var(--panel); }
-  .cutting .ch { padding: 6px 10px; border-bottom: 1px solid var(--bd2); display: flex;
-    align-items: center; gap: 12px; }
-  .cutting .ch b { font-size: 12px; }
-  .cutting .cd-search { margin-left: auto; border: 1px solid var(--bd); border-radius: 4px;
-    padding: 3px 8px; font: inherit; font-size: 11.5px; width: 160px; }
-  .cd-wrap { overflow: auto; min-height: 0; }
-  table.cd { width: 100%; border-collapse: collapse; }
-  .cd thead th { position: sticky; top: 0; background: var(--head); text-align: left;
-    font-weight: 600; color: #4a525a; padding: 5px 10px; border-bottom: 1px solid var(--bd);
-    font-size: 11px; }
-  .cd td { padding: 4px 10px; border-bottom: 1px solid #f0f1f3; font-variant-numeric: tabular-nums; }
-  .cd tr:hover td { background: #eef5fb; }
-  .cd td.pname { color: #1a5fb4; }
-  .cd-empty { color: var(--muted); padding: 28px 10px; text-align: center; }
+  /* URL row */
+  .urlrow { display: flex; gap: 10px; }
+  .urlrow input { flex: 1; border: 1px solid var(--bd); border-radius: 8px; padding: 11px 13px; font: inherit; }
+  .btn { border: none; border-radius: 8px; padding: 10px 18px; font: inherit; font-weight: 600;
+    cursor: pointer; background: #4a525a; color: #fff; display: inline-flex; align-items: center; gap: 7px; }
+  .btn:hover { background: #3a4047; }
+  .btn:disabled { background: #b9bfc6; cursor: not-allowed; }
+  .btn.primary { background: var(--brand); color: #3a2a06; }
+  .btn.primary:hover { background: var(--brand-dim); }
+  .btn.ghost { background: #fff; color: #4a525a; border: 1px solid var(--bd); }
 
-  .rightpane { grid-row: 2; display: flex; flex-direction: column; min-height: 0;
-    background: var(--panel); }
-  .tabs { display: flex; border-bottom: 1px solid var(--bd); background: var(--head); }
-  .tab { padding: 7px 16px; font-size: 12px; cursor: pointer; color: #57606a;
-    border-bottom: 2px solid transparent; }
-  .tab.on { color: #1a1d21; background: var(--panel); border-bottom-color: var(--brand); font-weight: 600; }
-  .tabbody { flex: 1; overflow: auto; padding: 12px 14px; min-height: 0; }
+  /* scan status */
+  .scan { display: none; border: 1px solid var(--bd2); border-radius: 10px; padding: 14px 16px;
+    margin-top: 8px; }
+  .scan.show { display: flex; align-items: center; gap: 14px; }
+  .spinner { width: 26px; height: 26px; border: 3px solid #e3e7ec; border-top-color: var(--brand);
+    border-radius: 50%; animation: spin .8s linear infinite; flex: 0 0 auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .scan .txt { flex: 1; }
+  .scan .st { font-weight: 500; }
+  .scan .found { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .bar { width: 220px; height: 8px; background: #e7eaee; border-radius: 5px; overflow: hidden; }
+  .bar > div { height: 100%; background: #9aa3ad; width: 0; transition: width .3s; }
+  .scan .pct { width: 42px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .scan.err { border-color: #e7b4b4; background: #fdf3f3; }
+  .scan.done { border-color: #bfe3cb; background: #f0f9f2; }
+  .scan.err .spinner, .scan.done .spinner { display: none; }
+  .scan-ic { font-size: 22px; }
+  .scan.err .scan-ic { color: #b3261e; }
+  .scan.done .scan-ic { color: #1f7a3d; }
 
-  .breadcrumb { color: var(--muted); font-size: 11px; margin-bottom: 8px; }
-  .breadcrumb b { color: #3a3f44; font-weight: 600; }
-  .info-title { font-size: 12.5px; font-weight: 600; color: #2b2f33; margin-bottom: 10px; line-height: 1.4; }
-  .preview { position: relative; height: 300px; border: 1px solid var(--bd2); border-radius: 6px;
-    background-color: #fbfdff; overflow: hidden; cursor: grab;
-    background-image: linear-gradient(#e9eef5 1px, transparent 1px),
-                      linear-gradient(90deg, #e9eef5 1px, transparent 1px);
-    background-size: 22px 22px; }
-  .preview.grabbing { cursor: grabbing; }
-  .preview svg { position: absolute; left: 0; top: 0; }
-  .preview .axis { position: absolute; font-size: 10px; font-weight: 600; }
-  .preview .az { top: 6px; left: 50%; color: #2f7d32; }
-  .preview .ax { right: 8px; bottom: 8px; color: #c0392b; }
-  .preview .scalebar { position: absolute; bottom: 6px; left: 8px; color: #8a929b; font-size: 10px; }
-  .props { width: 100%; border-collapse: collapse; margin-top: 12px; }
-  .props td { padding: 4px 6px; border-bottom: 1px solid #eef0f2; vertical-align: top; font-size: 12px; }
-  .props td.k { color: var(--muted); width: 42%; }
-  .props td.v { color: #2b2f33; font-variant-numeric: tabular-nums; }
-  .props a { color: #1a5fb4; word-break: break-all; }
-  .info-empty { color: var(--muted); text-align: center; padding: 60px 10px; }
+  /* review */
+  .review { display: none; }
+  .review.show { display: block; }
+  .review-bar { display: flex; align-items: center; gap: 8px; margin: 8px 0 14px; }
+  .review-bar .sp { flex: 1; }
+  .chk-btn { border: 1.5px solid var(--brand); background: #fff7e8; color: #8a6a1f; border-radius: 7px;
+    padding: 9px 16px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    display: inline-flex; gap: 7px; align-items: center; }
+  .chk-btn:hover { background: var(--brand); color: #3a2a06; }
+  .chk-btn.solid { background: var(--brand); color: #3a2a06; }
+  .chk-btn.solid:hover { background: var(--brand-dim); }
+  .selcount { font-size: 13px; color: #4a525a; font-weight: 600; margin-left: 4px;
+    font-variant-numeric: tabular-nums; }
+  .search { border: 1px solid var(--bd); border-radius: 6px; padding: 7px 11px 7px 30px; font: inherit;
+    width: 230px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%239aa3ad' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='M10 10l3 3'/%3E%3C/svg%3E") 9px center no-repeat; }
+  .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .group { border: 1px solid var(--bd2); border-radius: 10px; padding: 12px 14px; }
+  .group h4 { margin: 0 0 10px; font-size: 13px; }
+  .group .items { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+  .item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; }
+  .item input { accent-color: var(--brand); width: 15px; height: 15px; }
+  .item.dim { opacity: .4; }
+  .conf { margin-left: auto; font-size: 10px; color: #9aa3ad; }
 
-  .filter-group h4 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase;
-    letter-spacing: .04em; color: #57606a; }
-  .filter-row { display: flex; align-items: center; gap: 8px; padding: 4px 2px; cursor: pointer; }
-  .filter-row input { accent-color: var(--brand); }
-  .filter-row .count { margin-left: auto; color: var(--muted); font-size: 11px; }
-  .filter-row.disabled { color: #b5bbc2; cursor: default; }
-  .filter-search { width: 100%; border: 1px solid var(--bd); border-radius: 4px;
-    padding: 6px 9px; font: inherit; margin: 4px 0 14px; }
+  .footer { display: flex; align-items: center; gap: 14px; margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--bd2); }
+  .footer .note { flex: 1; text-align: center; color: var(--muted); font-size: 12.5px; }
 
-  .cd td.pname { cursor: pointer; }
-  .cd td.pname:hover { text-decoration: underline; }
-  .cd-hint { color: var(--muted); font-size: 11px; padding: 2px 10px 8px; }
-
-  /* preset editor overlay (Fusion-style) */
-  #pe-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-    display: none; align-items: center; justify-content: center; z-index: 30; }
-  .pe-card { background: var(--panel); border: 1px solid var(--bd); border-radius: 8px;
-    width: min(520px, 94vw); min-width: 420px; max-width: 96vw; max-height: 90vh; overflow: auto;
-    resize: both; box-shadow: 0 12px 48px rgba(0,0,0,0.3); }
-  .pe-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
-    padding: 12px 16px; border-bottom: 1px solid var(--bd2); position: sticky; top: 0; background: var(--panel); }
-  .pe-title { font-weight: 600; color: #1a5fb4; }
-  .pe-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
-  .pe-close { background: none; border: none; font-size: 20px; color: var(--muted); cursor: pointer; line-height: 1; }
-  .pe-body { padding: 12px 16px; }
-  .pe-group { border: 1px solid var(--bd2); border-radius: 6px; padding: 8px 12px 10px; margin-bottom: 12px; }
-  .pe-group h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #57606a; }
-  .pe-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
-  .pe-row label { flex: 0 0 180px; color: #4a525a; }
-  .pe-row .pe-control { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
-  .pe-row .pe-control.driven { cursor: pointer; }
-  .pe-row .pe-vwrap { flex: 1; min-width: 0; }
-  .pe-row .val { width: 100%; border: 1px solid var(--bd); border-radius: 4px; padding: 4px 8px;
-    background: #f7f8f9; color: #2b2f33; font-variant-numeric: tabular-nums;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pe-control.driven .val { color: #0f7b8f; }                 /* driven end-results in teal */
-  .pe-control .val.is-expr { font-family: ui-monospace, Menlo, monospace; color: #1a7f37;
-    background: #eef7ef; border-color: #9ec9a3;
-    white-space: normal; overflow: visible; text-overflow: clip; word-break: break-word; }
-  .fx { font: italic 13px "Times New Roman", Georgia, serif; color: #9aa3ad;
-    width: 14px; text-align: center; flex: 0 0 auto; }
-  .pe-control.driven:hover .fx { color: #0f7b8f; }
-  .pe-hint { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
-  .pe-row input.chk { width: 15px; height: 15px; accent-color: var(--brand); }
-  .pe-note { font-size: 11px; color: #8a6a1f; background: #fdf2da; border: 1px solid #f0d79a;
-    border-radius: 5px; padding: 6px 9px; margin-top: 4px; }
+  /* notes sidebar */
+  .notes { padding: 18px; }
+  .notes h3 { margin: 0 0 14px; font-size: 14px; display: flex; gap: 8px; align-items: center; }
+  .note-item { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--bd2);
+    font-size: 12.5px; color: #4a525a; }
+  .note-item .ic { color: var(--brand-dim); flex: 0 0 18px; }
 </style>
-  <script type="module" crossorigin src="./assets/index-CJhrR83a.js"></script>
+  <script type="module" crossorigin src="./assets/main-CQzE8m5r.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
 </head>
 <body>
-  <div id="app" class="app"></div>
-  <div id="pe-overlay"></div>
+  <div class="wrap">
+    <div class="card main">
+      <div class="titlebar">
+        <div class="glyph">#</div>
+        <div>
+          <h1>Tool Category Scraper</h1>
+          <p class="sub">Scan a tooling manufacturer website and review detected tool categories.</p>
+        </div>
+        <span class="brandchip">Tool Builder · Magic Factory</span>
+      </div>
+
+      <div class="keybar" id="keybar">
+        <label>Claude API key</label>
+        <input id="key" type="password" placeholder="sk-ant-… (stored only in your browser)" autocomplete="off" />
+        <button class="btn ghost small" id="saveKey">Save key</button>
+      </div>
+      <div class="keysaved" id="keySaved" style="display:none">
+        <span class="badge">✓ API key saved</span>
+        <span class="mask" id="keyMask"></span>
+        <button class="linkbtn" id="changeKey">Change</button>
+      </div>
+      <div class="keynext" id="keyNext" style="display:none">Next: enter a manufacturer website URL below and click <b>Scan Website</b> ↓</div>
+      <details class="keyhelp">
+        <summary>Don't have a Claude API key? Here's how to get one →</summary>
+        <ol>
+          <li>Go to <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> and sign in (or create a free account).</li>
+          <li>Add a little credit under <a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener">Settings → Billing</a> (a few dollars is plenty — each scan costs a few cents).</li>
+          <li>Open <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Settings → API keys</a> and click <b>Create Key</b>.</li>
+          <li>Copy the key (it starts with <code>sk-ant-</code>) and paste it in the field above.</li>
+        </ol>
+        <p class="kh-note">Your key is saved only in this browser and is sent straight to Anthropic — Magic Factory never sees it. Usage is billed to your own Anthropic account.</p>
+      </details>
+
+      <div class="sec-h">1) Website URL</div>
+      <div class="urlrow">
+        <input id="url" type="text" placeholder="https://www.helicaltool.com" />
+        <button class="btn" id="scanBtn">🌐 Scan Website</button>
+      </div>
+      <div class="hint">Paste a manufacturer website URL to scan for configurable tool categories.
+        Claude fetches and reads the site for you (no data leaves your browser except the URL + your key).</div>
+
+      <div class="sec-h" id="statusH" style="display:none">2) Scan Status</div>
+      <div class="scan" id="scan">
+        <div class="spinner"></div><span class="scan-ic" id="scanIc" style="display:none"></span>
+        <div class="txt"><div class="st" id="scanSt">Reading product navigation…</div>
+          <div class="found" id="scanFound"></div></div>
+        <div class="bar"><div id="barFill"></div></div>
+        <div class="pct" id="scanPct">0%</div>
+      </div>
+
+      <div class="review" id="review">
+        <div class="sec-h">3) Review Tool Categories</div>
+        <div class="review-bar">
+          <button class="chk-btn" id="selAll">☑ Select all</button>
+          <button class="chk-btn solid" id="unselAll">☐ Unselect all</button>
+          <span class="selcount" id="selCount"></span>
+          <div class="sp"></div>
+          <input class="search" id="catSearch" placeholder="Search categories…" />
+        </div>
+        <div class="groups" id="groups"></div>
+        <div class="footer">
+          <button class="btn ghost" id="backBtn">Back</button>
+          <div class="note">All detected categories are selected by default.<br/>Uncheck categories before import.</div>
+          <button class="btn primary" id="continueBtn">Continue →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card notes">
+      <h3>ℹ️ Notes</h3>
+      <div class="note-item"><span class="ic">⌗</span><span>Scrapes navigation and category links via Claude's web fetch.</span></div>
+      <div class="note-item"><span class="ic">⊘</span><span>Ignores non-product links like Contact / Login / Resources.</span></div>
+      <div class="note-item"><span class="ic">🗄</span><span>Stores parent group, source URL, confidence, and selected state.</span></div>
+      <div class="note-item"><span class="ic">👤</span><span>Lets you review before import.</span></div>
+    </div>
+  </div>
 </body>
 </html>
