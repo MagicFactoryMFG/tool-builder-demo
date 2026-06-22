@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tool Builder — Create Tool Geometry</title>
+<style>
+  :root { --brand: #f5a623; --brand-dim: #c9821b; --ink: #2b2f33; --muted: #6b7280;
+    --bd: #d6dae0; --bd2: #e7eaee; --panel: #ffffff; --bg: #eef0f3; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body { background: var(--bg); color: var(--ink);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1080px; margin: 22px auto; padding: 0 18px; }
+  .card { background: var(--panel); border: 1px solid var(--bd); border-radius: 12px; padding: 22px 26px; }
+  .topbar { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+  .backlink { color: #1a5fb4; text-decoration: none; font-weight: 600; font-size: 12.5px; }
+  .backlink:hover { text-decoration: underline; }
+  h1 { font-size: 22px; margin: 0; }
+  .brandchip { margin-left: auto; font-size: 11px; color: #8a6a1f; background: #fdf2da;
+    border: 1px solid #f0d79a; border-radius: 20px; padding: 3px 11px; }
+  .sub { color: var(--muted); margin: 2px 0 0; }
+  .steps { display: flex; gap: 8px; margin: 14px 0 18px; font-size: 12px; flex-wrap: wrap; }
+  .step { padding: 4px 10px; border-radius: 20px; background: #eef0f3; color: #6b7280; }
+  .step.done { background: #e8f4ec; color: #1f7a3d; }
+  .step.now { background: var(--brand); color: #3a2a06; font-weight: 600; }
+
+  .actions { display: flex; gap: 10px; align-items: center; margin: 6px 0 14px; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 8px; padding: 9px 16px; font: inherit; font-weight: 600;
+    cursor: pointer; background: #4a525a; color: #fff; display: inline-flex; gap: 7px; align-items: center; }
+  .btn:hover { background: #3a4047; }
+  .btn:disabled { background: #b9bfc6; cursor: not-allowed; }
+  .btn.primary { background: var(--brand); color: #3a2a06; }
+  .btn.primary:hover { background: var(--brand-dim); }
+  .btn.ghost { background: #fff; color: #4a525a; border: 1px solid var(--bd); }
+  .counts { color: var(--muted); font-size: 12.5px; }
+  .keywarn { background: #fdf3f3; border: 1px solid #e7b4b4; color: #8a2b22; border-radius: 8px;
+    padding: 9px 12px; font-size: 12.5px; margin-bottom: 12px; display: none; }
+  .keywarn.show { display: block; }
+
+  .cats { display: flex; flex-direction: column; gap: 8px; }
+  .cat { border: 1px solid var(--bd2); border-radius: 10px; padding: 10px 14px;
+    display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; }
+  .cat .nm { font-weight: 600; }
+  .cat .gp { color: var(--muted); font-size: 12px; font-weight: 400; }
+  .pill { font-size: 11.5px; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .pill.pending { background: #eef0f3; color: #6b7280; }
+  .pill.run { background: #fff3d6; color: #8a6a1f; }
+  .pill.done { background: #e8f4ec; color: #1f7a3d; }
+  .pill.upload { background: #fdeccf; color: #8a5a13; }
+  .pill.err { background: #fdebe9; color: #b3261e; }
+  .uploadbtn { font-size: 12px; color: #1a5fb4; background: none; border: 1px solid var(--bd);
+    border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+  .uploadbtn:hover { background: #f3f6fb; }
+  .hide { display: none; }
+
+  .preview { margin-top: 18px; }
+  .preview h3 { font-size: 14px; margin: 0 0 8px; }
+  table.geo { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .geo th { text-align: left; color: #4a525a; font-weight: 600; border-bottom: 1px solid var(--bd);
+    padding: 6px 8px; position: sticky; top: 0; background: #f4f6f8; }
+  .geo td { padding: 5px 8px; border-bottom: 1px solid #f0f1f3; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .geo .fam { color: #4a525a; }
+  .geo-wrap { max-height: 360px; overflow: auto; border: 1px solid var(--bd2); border-radius: 8px; }
+
+  .footer { display: flex; align-items: center; gap: 14px; margin-top: 22px; padding-top: 16px;
+    border-top: 1px solid var(--bd2); }
+  .footer .sp { flex: 1; }
+  .note { color: var(--muted); font-size: 12px; }
+</style>
+  <script type="module" crossorigin src="./assets/geometry-ZtI-TKc5.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <a class="backlink" href="./">← Back to scraper</a>
+        <h1>Create Tool Geometry</h1>
+        <span class="brandchip">Tool Builder · Magic Factory</span>
+      </div>
+      <p class="sub">Pull each selected category's tool table (Ø, shank, LOC, OAL, flutes, SKUs). Claude tries to read the site; where it can't, upload a PDF or screenshot.</p>
+      <div class="steps">
+        <span class="step done">1 · Website</span>
+        <span class="step done">2 · Categories</span>
+        <span class="step now">3 · Geometry</span>
+        <span class="step">4 · Verify</span>
+        <span class="step">5 · Speeds &amp; Feeds</span>
+        <span class="step">6 · Normalize</span>
+        <span class="step">7 · Verify</span>
+        <span class="step">8 · Export</span>
+      </div>
+
+      <div class="keywarn" id="keyWarn">No Claude API key found. <a href="./">Go back to the scraper</a> to add it — geometry extraction needs it (uploads still work for parsing).</div>
+
+      <div class="actions">
+        <button class="btn primary" id="scrapeAll">🌐 Extract geometry with Claude</button>
+        <span class="counts" id="counts"></span>
+      </div>
+
+      <div class="cats" id="cats"></div>
+
+      <div class="preview hide" id="preview">
+        <h3 id="previewH">Extracted tools</h3>
+        <div class="geo-wrap"><table class="geo">
+          <thead><tr><th>Family</th><th>Cutter Ø</th><th>Shank Ø</th><th>LOC</th><th>OAL</th><th>Flutes</th><th>SKU</th><th>Coating</th></tr></thead>
+          <tbody id="geoBody"></tbody>
+        </table></div>
+      </div>
+
+      <div class="footer">
+        <button class="btn ghost" onclick="location.href='./'">Back</button>
+        <div class="sp"></div>
+        <span class="note" id="footNote"></span>
+        <button class="btn primary" id="continueBtn">Continue → Verify</button>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="fileInput" accept="application/pdf,image/*" multiple class="hide" />
+</body>
+</html>
